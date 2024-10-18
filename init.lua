@@ -192,6 +192,8 @@ vim.keymap.set('n', '<leader>wk', '<C-w><C-k>', { desc = 'Move focus to the uppe
 
 -- Personal keymaps
 vim.keymap.set('i', 'jk', '<Esc>')
+vim.keymap.set('n', 'H', ':bp<CR>', { desc = 'Previous buffer', silent = true })
+vim.keymap.set('n', 'L', ':bn<CR>', { desc = 'Next buffer', silent = true })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -472,6 +474,15 @@ require('lazy').setup({
             poll_rate = 0.5,
             ignore_done_already = true,
             ignore_empty_message = true,
+            suppress_on_insert = true,
+            clear_on_detach = function(client_id)
+              local client = vim.lsp.get_client_by_id(client_id)
+              return client and client.name or nil
+            end,
+            display = {
+              done_ttl = 2,
+              progress_ttl = 5,
+            },
           },
         },
       },
@@ -802,9 +813,9 @@ require('lazy').setup({
 
           -- If you prefer more traditional completion keymaps,
           -- you can uncomment the following lines
-          --['<CR>'] = cmp.mapping.confirm { select = true },
-          --['<Tab>'] = cmp.mapping.select_next_item(),
-          --['<S-Tab>'] = cmp.mapping.select_prev_item(),
+          ['<CR>'] = cmp.mapping.confirm { select = true },
+          ['<Tab>'] = cmp.mapping.select_next_item(),
+          ['<S-Tab>'] = cmp.mapping.select_prev_item(),
 
           -- Manually trigger a completion from nvim-cmp.
           --  Generally you don't need this, because nvim-cmp will display
@@ -956,7 +967,7 @@ require('lazy').setup({
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
   --    For additional information, see `:help lazy.nvim-lazy.nvim-structuring-your-plugins`
-  -- { import = 'custom.plugins' },
+  { import = 'custom.plugins' },
 }, {
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
