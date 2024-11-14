@@ -26,6 +26,9 @@ return {
     skip_unbalanced = true,
     -- better deal with markdown code blocks
     markdown = true,
+    mappings = {
+      ['$'] = { action = 'closeopen', pair = '$$' },
+    },
   },
   config = function(_, opts)
     require('mini.pairs').setup(opts)

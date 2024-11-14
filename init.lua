@@ -212,6 +212,27 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
+-- Personal autocommands
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'typst',
+  callback = function()
+    local map = function(keys, func, desc, mode)
+      mode = mode or 'n'
+      vim.keymap.set(mode, keys, func, { desc = desc })
+    end
+    vim.bo.commentstring = '// %s'
+    map('<leader>tt', ':TypstPreviewToggle<cr>', '[T]oggle [T]ypst Preview')
+  end,
+})
+
+vim.api.nvim_create_autocmd('BufWritePost', {
+  pattern = '*',
+  callback = function()
+    MiniTrailspace.trim()
+    MiniTrailspace.trim_last_lines()
+  end,
+})
+
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -647,6 +668,15 @@ require('lazy').setup({
         },
         ruff_lsp = {},
         marksman = {},
+        tinymist = {
+          single_file_support = true,
+          root_dir = function()
+            return '/Users/bojohnson/'
+          end,
+          settings = {
+            formatterMode = 'typstyle',
+          },
+        },
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -762,17 +792,17 @@ require('lazy').setup({
           end
           return 'make install_jsregexp'
         end)(),
-        dependencies = {
-          -- `friendly-snippets` contains a variety of premade snippets.
-          --    See the README about individual language/framework/plugin snippets:
-          --    https://github.com/rafamadriz/friendly-snippets
-          {
-            'rafamadriz/friendly-snippets',
-            config = function()
-              require('luasnip.loaders.from_vscode').lazy_load()
-            end,
-          },
-        },
+        -- dependencies = {
+        --   -- `friendly-snippets` contains a variety of premade snippets.
+        --   --    See the README about individual language/framework/plugin snippets:
+        --   --    https://github.com/rafamadriz/friendly-snippets
+        --   {
+        --     'rafamadriz/friendly-snippets',
+        --     config = function()
+        --       require('luasnip.loaders.from_vscode').lazy_load()
+        --     end,
+        --   },
+        -- },
       },
       'saadparwaiz1/cmp_luasnip',
 
@@ -895,6 +925,8 @@ require('lazy').setup({
       --  - yinq - [Y]ank [I]nside [N]ext [Q]uote
       --  - ci'  - [C]hange [I]nside [']quote
       require('mini.ai').setup { n_lines = 500 }
+
+      require('mini.trailspace').setup()
 
       -- Add/delete/replace surroundings (brackets, quotes, etc.)
       --
