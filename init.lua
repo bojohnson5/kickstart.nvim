@@ -666,7 +666,7 @@ require('lazy').setup({
             },
           },
         },
-        ruff_lsp = {},
+        ruff = {},
         marksman = {},
         tinymist = {
           single_file_support = true,

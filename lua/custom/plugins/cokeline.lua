@@ -58,14 +58,19 @@ return {
         },
         {
           text = function(buffer)
-            return buffer.filename .. '  '
+            return buffer.unique_prefix .. buffer.filename .. '  '
           end,
           bold = function(buffer)
             return buffer.is_focused
           end,
         },
         {
-          text = '×',
+          text = function(buffer)
+            return buffer.is_modified and '●' or '✕'
+          end,
+          fg = function()
+            return '#e7765e'
+          end,
           on_click = function(_, _, _, _, buffer)
             buffer:delete()
           end,
