@@ -235,6 +235,13 @@ vim.api.nvim_create_autocmd('BufWritePost', {
   end,
 })
 
+-- Personal user commands
+vim.api.nvim_create_user_command('SmartBdelete', function()
+  local util = require 'cokeline.utils'
+  util.buf_delete(vim.api.nvim_get_current_buf(), 'next', false)
+end, {})
+vim.api.nvim_create_user_command('Bd', 'SmartBdelete', {})
+
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
