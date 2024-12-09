@@ -84,6 +84,16 @@ I hope you enjoy your Neovim journey,
 P.S. You can delete this when you're done too. It's your config now! :)
 --]]
 
+-- Neovide settings
+if vim.g.neovide then
+  vim.o.guifont = 'JetBrainsMono Nerd Font:h15'
+  vim.api.nvim_create_autocmd('VimEnter', {
+    callback = function()
+      vim.cmd 'silent! cd ~'
+    end,
+  })
+end
+
 -- Set <space> as the leader key
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
@@ -198,6 +208,7 @@ vim.keymap.set('n', '<leader>wk', '<C-w><C-k>', { desc = 'Move focus to the uppe
 vim.keymap.set('i', 'jk', '<Esc>')
 vim.keymap.set('n', 'H', ':bp<CR>', { desc = 'Previous buffer', silent = true })
 vim.keymap.set('n', 'L', ':bn<CR>', { desc = 'Next buffer', silent = true })
+vim.keymap.set('n', '<leader>tm', ':ToggleTerm<cr>', { desc = '[T]oggle Ter[M]inal' })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -226,12 +237,26 @@ vim.api.nvim_create_autocmd('FileType', {
   end,
 })
 
-vim.api.nvim_create_autocmd('BufWritePost', {
+vim.api.nvim_create_autocmd('BufWritePre', {
   pattern = '*',
   callback = function()
     MiniTrailspace.trim()
     MiniTrailspace.trim_last_lines()
-    require('conform').format { async = true, lsp_format = 'fallback' }
+    vim.lsp.buf.format()
+    -- require('conform').format { async = true, lsp_format = 'fallback', quiet = true }
+  end,
+})
+
+vim.api.nvim_create_autocmd('TermOpen', {
+  pattern = '*',
+  callback = function()
+    -- Map <Esc> to exit terminal insert mode
+    vim.api.nvim_buf_set_keymap(0, 't', '<Esc>', [[<C-\><C-n>]], { noremap = true, silent = true })
+    vim.api.nvim_buf_set_keymap(0, 't', 'jk', [[<C-\><C-n>]], { noremap = true, silent = true })
+    vim.api.nvim_buf_set_keymap(0, 't', '<C-h>', [[<C-\><C-n><C-W>h]], { noremap = true, silent = true })
+    vim.api.nvim_buf_set_keymap(0, 't', '<C-j>', [[<C-\><C-n><C-W>j]], { noremap = true, silent = true })
+    vim.api.nvim_buf_set_keymap(0, 't', '<C-k>', [[<C-\><C-n><C-W>k]], { noremap = true, silent = true })
+    vim.api.nvim_buf_set_keymap(0, 't', '<C-l>', [[<C-\><C-n><C-W>l]], { noremap = true, silent = true })
   end,
 })
 
@@ -684,6 +709,7 @@ require('lazy').setup({
           end,
           settings = {
             formatterMode = 'typstyle',
+            exportPdf = 'onType',
           },
         },
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
@@ -750,7 +776,7 @@ require('lazy').setup({
       {
         '<leader>cf',
         function()
-          require('conform').format { async = true, lsp_format = 'fallback' }
+          require('conform').format { async = true, lsp_format = 'fallback', silent = true }
         end,
         mode = '',
         desc = '[F]ormat buffer',
