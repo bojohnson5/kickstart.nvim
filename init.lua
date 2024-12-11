@@ -242,8 +242,10 @@ vim.api.nvim_create_autocmd('BufWritePre', {
   callback = function()
     MiniTrailspace.trim()
     MiniTrailspace.trim_last_lines()
-    vim.lsp.buf.format()
-    -- require('conform').format { async = true, lsp_format = 'fallback', quiet = true }
+    local clients = vim.lsp.get_clients { bufnr = vim.api.nvim_get_current_buf() }
+    if next(clients) ~= nil then
+      vim.lsp.buf.format()
+    end
   end,
 })
 
